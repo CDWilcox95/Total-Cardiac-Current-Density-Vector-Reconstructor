@@ -2,14 +2,9 @@ clear; close all;
 load joshmap3D_circle 
 
 %% Load in Data and set sbj_num variable
-% load("D:\Cardiac_Imaging\Data\Sbj708_23_09_25\Sbj708_post_23_09_25_16_44_05.mat");   sbj_num="708";
-load("D:\Cardiac_Imaging\Data\Subject63_22_06_29\sbj63_111kHz_supine_22_06_29_15_54_17.mat"); sbj_num="63"; 
-% load("D:\Cardiac_Imaging\Data\Subject17_22_07_07\sbj17_111kHz_prone_22_07_07_14_32_24.mat");    sbj_num="17";
-% load("D:\Cardiac_Imaging\Data\Subject7_22_07_11\Sbj7_3D_22_11_07_15_38_54.mat");    sbj_num="7";
-% load("D:\Cardiac_Imaging\Data\Sbj705_post_23_09_06_15_42_02.mat");  sbj_num="705";
-% load("D:\Cardiac_Imaging\Data\Subject23_22_10_24\Sbj23_supine_22_10_24_15_34_32.mat");  sbj_num="23";
-% load("D:\Cardiac_Imaging\Data\Subject42_22_01_21\Sbj42_prone_22_10_21_15_13_52.mat"); sbj_num="42";
-% load("D:\Cardiac_Imaging\Data\Subject333_22_10_24\Sbj333_prone_22_10_24_16_35_57.mat"); sbj_num="333";
+data_file=""
+load(data_file); sbj_num="";
+% Example: load("D:\Cardiac_Imaging\Data\Sbj708_23_09_25\Sbj708_post_23_09_25_16_44_05.mat");   sbj_num="708";
 
 %% Sets paramaters for program execution
 % Construct new FEM mesh to compute reconstruction 
