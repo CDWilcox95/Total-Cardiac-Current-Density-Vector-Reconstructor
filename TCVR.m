@@ -9,10 +9,10 @@ load(data_file); sbj_num="";
 %% Sets paramaters for program execution
 % Construct new FEM mesh to compute reconstruction 
 new_test_map=false;     
+% New ToDLeR run
+new_Todler=true;
 % Use Adaptive Filter to filter ECG voltages
 filter_ECG=false;
-% Compute LI, LII, LIII Electrocardiograms from data [default(false) = LII]
-all_leads=false;
 % Compute conductivity reconstructions using TodLeR
 recon_conductivity=false;
 % Interpolate Partial Body Surface Map (pBSM) and display
@@ -20,9 +20,10 @@ new_BSM_interp=false;
 
 
 %% Plotting options
-video_plt=false;    %Creates a video of TCV over given frames
-plt_all=false;      %Plots all cardiac information from data
-
+video_plt=false;        %Creates a video of TCV over given frames
+plt_all=false;             %Plots all cardiac information from data
+all_leads=false;           % Compute LI, LII, LIII Electrocardiograms from data [default(false) = LII]
+plt_Todler_movie=false;    %Plots Todler reconstructions of conductivity distribution
 
 %% Set model paramaters (cm)
 
@@ -91,11 +92,15 @@ else
     
 end
 
+%% Setup model_info paramater w/ subject info  (info in meters)
+model_info.R=10^-2 *R;   model_info.H=10^-2 *H;   Bh(4)=model_info.R/3; model_info.num_elec=32; model_info.shape='c'; model_info.elec_planes=[0.04, 0.04+vertical_gap];
+
+
 %% Compute Conductivity Reconstructions 
 if recon_conductivity
     % fTodler_act5 returns conductivity (gamma_real_vec) permittivity
     % (gamma_image_vec) and best-fitted constant conductivity (sigma_b)
-    [gamma_real_vec, gamma_imag_vec, sigma_b]=fTodler_act5(frame_voltage(:,:,1:2000), cur_pattern, false);
+    [gamma_real_vec, gamma_imag_vec, sigma_b]=fTodler_act5(frame_voltage(:,:,1:2000), cur_pattern, model_info, new_Todler, false);
     sigmab_R=real(sigma_b);
     sigma_b=zeros(length(sigma_b),1);
     for i=1:length(sigmab_R)-1
@@ -133,8 +138,7 @@ plt_seg=zeros(992,1);   plt_seg(test_region)=1;
 
 
 
-%% Setup model_info paramater w/ subject info  (info in meters)
-model_info.R=10^-2 *R;   model_info.H=10^-2 *H;   Bh(4)=model_info.R/3; model_info.num_elec=32; model_info.shape='c'; model_info.elec_planes=[0.04, 0.04+vertical_gap];
+%% Generate mesh to compute reconstruction on 
 fmdl=GetReconMesh(model_info.R,model_info.H, new_test_map, "const", 'c', []);   model_info.FEM_Mesh=fmdl;   elec_pts=fmdl.nodes(fmdl.electrode_idx,:); 
 
 %% Finds best source point in test region 
