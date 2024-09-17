@@ -10,7 +10,7 @@ load(data_file); sbj_num="";
 % Construct new FEM mesh to compute reconstruction 
 new_test_map=false;     
 % New ToDLeR run
-new_Todler=true;
+new_Todler=false;
 % Use Adaptive Filter to filter ECG voltages
 filter_ECG=false;
 % Compute conductivity reconstructions using TodLeR
