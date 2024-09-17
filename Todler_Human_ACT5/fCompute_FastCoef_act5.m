@@ -1,4 +1,4 @@
-function [U0, AtA, FastCoef]=fCompute_FastCoef_act(R0, h, L, b)
+function [U0, AtA, Fast_Coef]=fCompute_FastCoef_act(R0, h, L, b)
 
 %% Compute the Forward problem, A matrix, and Regularization
 
