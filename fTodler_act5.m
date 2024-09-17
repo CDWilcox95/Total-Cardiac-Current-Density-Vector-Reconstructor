@@ -1,4 +1,4 @@
-function [gamma_recon_real, gamma_recon_imag, sigma_b]=fTodler_act5(frame_voltage, cur_pattern, plt_recon)
+function [gamma_recon_real, gamma_recon_imag, sigma_b]=fTodler_act5(frame_voltage, cur_pattern, model_info, new_sbj_param, plt_recon)
 
 %% Human Data - Todler reconstructions for ACT 5 
 
@@ -31,35 +31,45 @@ gamma2 = 5e-4;          % gamma for Tikhonov regularization
 
 %% Assign Current Pattern
 Trig_Pat = cur_pattern(:,1:L-1);
-
-%% Load Direct Problem Solution
-load Todler_Human_ACT5\forward_gap3D_act5_subj15
-U = U0;
-
-load Todler_Human_ACT5\CP32_16x2_M1.mat                           % load the applied current patterns
+cd Todler_Human_ACT5;
+load CP32_16x2_M1.mat                           % load the applied current patterns
 current_amp=3.5*10^-4;
 current_patterns = Cur_pat3D*current_amp;  
 
+load JoshMesh3D_496x2;  Joshmesh(:,1:2)=model_info.R.*Joshmesh(:,1:2); 
+Joshmesh(1:496,5:6)=[zeros(496,1),(model_info.H/2).*ones(496,1)];   JT_mesh_vox(497:992,5:6)=[(model_info.H/2).*ones(496,1),model_info.H.*ones(496,1)];
 
+%% Load Direct Problem Solution
+
+U0save_str="Fwd_AveGap_3DModel_sbj"+model_info.sbj_num+".mat";
+Asave_str="Amatrix_sbj"+model_info.sbj_num+".mat";
+if new_sbj_param
+    fprintf("Running FastCoef algorithm for predicted voltages, U0, and matrix A ... \n");
+    [U, A, FastCoef]=fCompute_FastCoef_act5(model_info.R, model_info.H, model_info.num_elec, model_info.vert_gap);
+    save(U0save_str, 'U');
+    fprintf("Computed U. Saved to: " +U0save_str+"\n");
+    
+    save(Asave_str, 'A_matrix');
+    fprintf("Computed A.  Saved to: "+Asave_str+"\n");
+
+    
+else
+    load(U0save_str);   load(Asave_str);
+end
+
+
+
+
+cd ../;
 [X, basis_coef]=ChangeBasis(current_patterns, cur_pattern(:,1:L-1));
 U=ChangeVoltageCurrent(basis_coef, U);
-% load("HomogenousTank_subj63.mat"); U=V;
 
 
-
-%% Load the A matrix e compute regularization
-% load Amatrix_act5_subj007
-load("Todler_Human_ACT5\Amatrix_act5_subj100.mat");
 DegreesFreedom=496*2;
-KK = K*K;
-R=A_matrix*(1);
-Matrix_A=reshape(R,KK,DegreesFreedom);
-A=Matrix_A;
-
 AtA=A'*A;
 % Choose regularization parameters.  There are two
-Par_1= gamma1;
-Par_2= gamma2;
+Par_1= 0.5;
+Par_2= 5*10^-4;
 Max_Diag=max(diag(AtA));
 Fast_Coef=inv(AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))*A' ;
 
