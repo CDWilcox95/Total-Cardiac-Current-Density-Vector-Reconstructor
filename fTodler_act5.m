@@ -77,7 +77,7 @@ Fast_Coef=inv(AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))*A' ;
 
 
 %% ********** load Joshua mapping file *******
-load joshmap3D_circle
+load Todler_Human_ACT5/joshmap3D_circle;
 
 %% Find the reference frame based on the maximum value of sigma best
 
