@@ -49,7 +49,7 @@ if new_sbj_param
     save(U0save_str, 'U');
     fprintf("Computed U. Saved to: " +U0save_str+"\n");
     
-    save(Asave_str, 'A_matrix');
+    save(Asave_str, 'A');
     fprintf("Computed A.  Saved to: "+Asave_str+"\n");
 
     
