@@ -93,6 +93,7 @@ else
 end
 
 %% Setup model_info paramater w/ subject info  (info in meters)
+model_info.sbj_num=sbj_num;
 model_info.R=10^-2 *R;   model_info.H=10^-2 *H;   Bh(4)=model_info.R/3; model_info.num_elec=32; model_info.shape='c'; model_info.elec_planes=[0.04, 0.04+vertical_gap];
 model_info.vert_gap=vertical_gap;
 
