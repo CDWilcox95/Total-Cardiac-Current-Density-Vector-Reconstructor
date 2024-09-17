@@ -1,6 +1,6 @@
 function fmdl=GetReconMesh(R,H, calc_new, cond_case, shape, Bh)
 
-order=1;    L=16;
+order=1;    L=32;
 if calc_new
     cd eidors;
     run startup.m;  cd meshing/netgen;
@@ -111,18 +111,6 @@ if calc_new
     save("Cylinder_FEM_mesh_D"+shape+"_O"+num2str(order)+"_modeldata.mat", "fmdl");
 else
     load("Cylinder_FEM_mesh_D"+shape+"_O"+num2str(order)+"_modeldata.mat"); 
-%     Pt=fmdl.nodes;  N=length(Pt);
-%     RotMatrix=@(theta) [cos(theta), -sin(theta); sin(theta), cos(theta)];
-%     
-%     rotated_pts=zeros(N,3);
-%     for n=1:N
-%         pt=Pt(n,1:2);
-% %         pt=RotMatrix(pi)*pt';
-%         pt(2)=-pt(2);
-%         rotated_pts(n,1:2)=pt;  rotated_pts(n,3)=Pt(n,3);
-%         
-%     end
-%     fmdl.nodes=rotated_pts;
     
     % cd eidors;
     % run startup.m;  cd meshing/netgen;
