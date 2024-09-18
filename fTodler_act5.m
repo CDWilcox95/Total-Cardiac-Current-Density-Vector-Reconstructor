@@ -45,7 +45,7 @@ U0save_str="Fwd_AveGap_3DModel_sbj"+model_info.sbj_num+".mat";
 Asave_str="Amatrix_sbj"+model_info.sbj_num+".mat";
 if new_sbj_param
     fprintf("Running FastCoef algorithm for predicted voltages, U0, and matrix A ... \n");
-    [U, A, FastCoef]=fCompute_FastCoef_act5(model_info.R, model_info.H, model_info.num_elec, model_info.vert_gap);
+    [U, A]=fCompute_FastCoef_act5(model_info.R, model_info.H, model_info.num_elec, model_info.vert_gap);
     save(U0save_str, 'U');
     fprintf("Computed U. Saved to: " +U0save_str+"\n");
     
