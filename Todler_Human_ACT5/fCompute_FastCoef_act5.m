@@ -1,4 +1,4 @@
-function [U0, AtA, Fast_Coef]=fCompute_FastCoef_act(R0, h, L, b)
+function [U0, A_matrix]=fCompute_FastCoef_act(R0, h, L, b)
 
 %% Compute the Forward problem, A matrix, and Regularization
 
@@ -94,23 +94,22 @@ disp('Done!')
 %% ************** Compute the Jacobian matrix A *************
 disp('Computing A matrix...')
 A_matrix = Compute_A_Matrix(mFR11, mFR12, mFR122, mFR144, mFR14, mFR3,mFZ11, mFZ12, mFZ13, mFZ14, mFZ3,Anm_xk, Bnm_xk, an_xk, bn_xk, ITheta_1, ITheta_2, ITheta_3, ITheta_4,mr,mz,FN,K,Voxel_N,Joshmesh);
-
-disp('Saving...')
-save Amatrix_act5_subj100.mat A_matrix
 disp('Done!')
+
+
 %% Regularization
-disp('Computing Regularization...')
-R=A_matrix;
-Matrix_A=reshape(R,KK,DegreesFreedom);
-A=Matrix_A;
-AtA=A'*A;
+%disp('Computing Regularization...')
+%R=A_matrix;
+%Matrix_A=reshape(R,KK,DegreesFreedom);
+%A=Matrix_A;
+%AtA=A'*A;
 % Choose regularization parameters.  There are two
-Par_1=0.5;
-Par_2=5*10^(-4);
-Max_Diag=max(diag(AtA));
+%Par_1=0.5;
+%Par_2=5*10^(-4);
+%Max_Diag=max(diag(AtA));
 % Fast_Coef=inv(AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))*A' ;
-Fast_Coef = (AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))\A';
+%Fast_Coef = (AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))\A';
 
-disp('Saving...')
-save Fast_Coef_act5_subj100.mat Fast_Coef  % Need to come up with a naming that describes the parameters of A or save as a mat file with those parameters
-disp('Done!')
+%disp('Saving...')
+%save Fast_Coef_act5_subj100.mat Fast_Coef  % Need to come up with a naming that describes the parameters of A or save as a mat file with those parameters
+%disp('Done!')
