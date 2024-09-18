@@ -64,14 +64,14 @@ cd ../;
 [X, basis_coef]=ChangeBasis(current_patterns, cur_pattern(:,1:L-1));
 U=ChangeVoltageCurrent(basis_coef, U);
 
-
 DegreesFreedom=496*2;
+A=reshape(A,K*K,DegreesFreedom);
 AtA=A'*A;
 % Choose regularization parameters.  There are two
 Par_1= 0.5;
 Par_2= 5*10^-4;
 Max_Diag=max(diag(AtA));
-Fast_Coef=inv(AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))*A' ;
+Fast_Coef=(AtA+Par_1*diag(diag(AtA))+Par_2*Max_Diag*(eye(size(AtA))))\A';
 
 % [Usvd, Ssvd, Vsvd]=svd(AtA+Par_1*diag(diag(AtA)));
 
