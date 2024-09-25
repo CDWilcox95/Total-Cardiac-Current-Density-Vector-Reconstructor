@@ -190,7 +190,7 @@ end
 %% Compute pBSM by interpolating measured voltages on each electrode over a cylinder
 % This takes a long time to compute, needs to be fixed (8/27/24)
 if new_BSM_interp
-    Vq=InterpolateVekgBSM(model_info, Vekg, true);  save("interpV_sbj"+sbj_num+".mat", 'Vq', '-v7.3');
+    Vq=InterpolateVekgBSM(model_info, Vekg);  save("interpV_sbj"+sbj_num+".mat", 'Vq', '-v7.3');
 end
 % load("interpV_sbj"+sbj_num+".mat");
 
