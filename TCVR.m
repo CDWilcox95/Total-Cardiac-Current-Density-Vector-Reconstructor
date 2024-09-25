@@ -184,7 +184,7 @@ for t=1:length(event_frames)
     plt_seg(sub_vox_region,t)=mesh_errs_t(voxel_region,t);
 end
 
-plt_onto_JoshMesh3D(plt_seg(:, 1:length(event_frames)), [], L2_ecg(event_frames(1:length(event_frames))),query_frames, [], "UAL", "", false, sbj_num); 
+% plt_onto_JoshMesh3D(plt_seg(:, 1:length(event_frames)), [], L2_ecg(event_frames(1:length(event_frames))),query_frames, [], "UAL", "", false, sbj_num); 
 
 
 %% Compute pBSM by interpolating measured voltages on each electrode over a cylinder
