@@ -98,6 +98,7 @@ model_info.R=10^-2 *R;   model_info.H=10^-2 *H;   Bh(4)=model_info.R/3; model_in
 model_info.vert_gap=vertical_gap;
 
 %% Compute Conductivity Reconstructions 
+mS2S=10^-3; %Convert mS/m -> S/m
 if recon_conductivity
     % fTodler_act5 returns conductivity (gamma_real_vec) permittivity
     % (gamma_image_vec) and best-fitted constant conductivity (sigma_b)
@@ -105,7 +106,7 @@ if recon_conductivity
     sigmab_R=real(sigma_b);
     sigma_b=zeros(length(sigma_b),1);
     for i=1:length(sigmab_R)-1
-        sigma_b((i-1)*32+1:i*32+32)=sigmab_R(i);
+        sigma_b((i-1)*32+1:i*32+32)=sigmab_R(i)*mS2S;
     end
     save("sbj"+sbj_num+"_sigma0.mat", 'sigma_b');
 end
