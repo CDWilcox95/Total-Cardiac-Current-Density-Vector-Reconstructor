@@ -167,63 +167,64 @@ switch method
         fprintf("Simulating Source Points for "+num2str(num_src)+" Source Problem \n");
         line_length=fprintf("Percentage of Points Simulated:  %.4g %%",100*(0/numHpts));
 %         G=G(:,:,sub_vox);
-%         if num_src>1
-% 
-%             cnt=1;  src_idx=zeros(num_src,1);
-%             soln_vec=zeros(numHpts, 3*num_src, num_data_volt);
-% 
-%             for k=1:num_src
-% 
-%                 for j=1:numHpts
-%                     for t=1:num_data_volt
-%                         if k>1 && j==src_idx(k-1)
-%                             break;
-%                         end
-%                         Gj=G(:,:,j);
-%                         Gtest=zeros(L,3*k);
-% 
-%                         for i=1:k-1
-%                             Gtest(:,3*i-2:3*i)=G(:,:,src_idx(i));
-%                         end
-%                         Gtest(:,3*k-2:3*k)=Gj;
-%                         [xt, ~]=RegSystem(Gtest, Vd(:,t), 'none', []);
-% 
-% %                         xt=inv(Gtest'*Gtest)*Gtest'*Vd(:,t);
-% 
-%                         V_sim(:,t)=Gtest*xt;
-%                         l2_err(j,t)=norm(V_sim(:,t)-Vd(:,t),2);
-% 
-%                         if k==num_src
-%                             soln_vec(j,:, t)=xt';
-%                             
-%                         end
-%                         fprintf(repmat('\b',1,line_length));
-%                         line_length=fprintf("Souce Index:  %d / %d,  Number Heart Points Simulated:  %d / %d,  Number Frames Simulated:  %d / %d" , k, num_src, j, numHpts, t, num_data_volt);
-% %                         line_length=fprintf("Percentage of Frames Simulated:  %.4g %%",100*(j/numHpts));
-%                     end
-%                     cycle_err(j)=CC_RelativeError(V_sim, Vd);
-%                     
-% 
-%                 end
-%                 [val, idx]=min(cycle_err, num_src);
-%                 src_idx(k)=idx;
-%     
-%             end
-% 
-%             err_val=val;
-%             
-%             
-%             src_vox=sub_vox(src_idx);
-%             
-%             Q0=heart_pts(src_idx,:);
-%             M0=soln_vec(src_idx,:,:);
-% 
-%         else
+        if num_src>1
+
+            cnt=1;  src_idx=zeros(num_src,1);
+            soln_vec=zeros(numHpts, 3*num_src, num_data_volt);
+
+            for k=1:num_src
+
+                for j=1:numHpts
+                    for t=1:num_data_volt
+                        if k>1 && j==src_idx(k-1)
+                            break;
+                        end
+                        Gj=G(:,:,j);
+                        Gtest=zeros(L,3*k);
+
+                        for i=1:k-1
+                            Gtest(:,3*i-2:3*i)=G(:,:,src_idx(i));
+                        end
+                        Gtest(:,3*k-2:3*k)=Gj;
+                        [xt, ~]=RegSystem(Gtest, Vd(:,t), 'none', []);
+
+%                         xt=inv(Gtest'*Gtest)*Gtest'*Vd(:,t);
+
+                        V_sim(:,t)=Gtest*xt;
+                        l2_err(j,t)=norm(V_sim(:,t)-Vd(:,t),2);
+
+                        if k==num_src
+                            soln_vec(j,:, t)=xt';
+                            
+                        end
+                        fprintf(repmat('\b',1,line_length));
+                        line_length=fprintf("Souce Index:  %d / %d,  Number Heart Points Simulated:  %d / %d,  Number Frames Simulated:  %d / %d" , k, num_src, j, numHpts, t, num_data_volt);
+%                         line_length=fprintf("Percentage of Frames Simulated:  %.4g %%",100*(j/numHpts));
+                    end
+                    cycle_err(j)=CC_RelativeError(V_sim, Vd);
+                    
+
+                end
+                [val, idx]=min(cycle_err);
+                src_idx(k)=idx;
+    
+            end
+
+            err_val=val;
+            
+            
+            src_vox=sub_vox(src_idx);
+            
+            Q0=heart_pts(src_idx,:);
+            M0=soln_vec(src_idx,:,:);
+            
+            minCC_idx=src_idx;
+        else
             cycle_err=zeros(numHpts,1);
             l2_err=zeros(numHpts, num_data_volt);
             f0=768-334;
             soln_vec=zeros(numHpts, 3, num_data_volt);
-%             [Uref_sim, Vref]=SimulateRefFrameECG(Vd, G, f0, sigmab)
+            [Uref_sim, Vref]=SimulateRefFrameECG(Vd, G, f0, sigmab)
             for j=1:numHpts
                 Gtest=G(:,:,j);
 
@@ -249,7 +250,7 @@ switch method
             src_vox=sub_vox(minCC_idx);
             Q0=heart_pts(minCC_idx,:);
             M0=soln_vec(minCC_idx,:,:);
-%         end
+        end
 
 
         %% Compute S2V Map for Found Sources
