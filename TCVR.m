@@ -9,7 +9,7 @@ load(data_file); sbj_num="";
 %% Sets paramaters for program execution
 % Construct new FEM mesh to compute reconstruction 
 new_test_map=false;     
-% New ToDLeR run
+% New ToDLeR paramater fit
 new_Todler=false;
 % Use Adaptive Filter to filter ECG voltages
 filter_ECG=false;
