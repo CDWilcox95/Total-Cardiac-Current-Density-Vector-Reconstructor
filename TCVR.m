@@ -2,8 +2,8 @@ clear; close all;
 load Todler_Human_ACT5/joshmap3D_circle;
 
 %% Load in Data and set sbj_num variable
-data_file=""
-load(data_file); sbj_num="";
+data_file="C:\Users\cdwil\Documents\GitHub\Data\Subject63_22_06_29\sbj63_100kHz_supine_22_06_29_15_52_12.mat";
+load(data_file); sbj_num="63";
 % Example: load("D:\Cardiac_Imaging\Data\Sbj708_23_09_25\Sbj708_post_23_09_25_16_44_05.mat");   sbj_num="708";
 
 %% Sets paramaters for program execution
@@ -17,11 +17,12 @@ filter_ECG=false;
 recon_conductivity=false;
 % Interpolate Partial Body Surface Map (pBSM) and display
 new_BSM_interp=false;
-
+% Compute new dipole origin and vectors
+newMQ=false;
 
 %% Plotting options
 video_plt=false;        %Creates a video of TCV over given frames
-plt_all=false;             %Plots all cardiac information from data
+plt_all=true;             %Plots all cardiac information from data
 all_leads=false;           % Compute LI, LII, LIII Electrocardiograms from data [default(false) = LII]
 plt_Todler_movie=false;    %Plots Todler reconstructions of conductivity distribution
 
@@ -32,6 +33,7 @@ if ~exist('vertical_gap', 'var')
     vertical_gap=7;
 end
 R=2.54*circumference/(2*pi);    H=vertical_gap+2*4;
+global Fs
 Fs=864.0553;    %Sampling Frequency
 
 
@@ -44,8 +46,8 @@ end
 load("AdaptiveFilter_ECG_subj"+sbj_num+".mat");
 
 %% Isolate data frames used in analysis [chosen far enough from initial data collection so that data is clean]
-% s0ekg=1500*32;  sNekg=1900*32; %sbj 63 & 17
-s0ekg=1500*32;  sNekg=1746*32;    %sbj 7
+s0ekg=1500*32;  sNekg=1900*32; %sbj 63 & 17
+% s0ekg=1500*32;  sNekg=1746*32;    %sbj 7
 % s0ekg=100*32;   sNekg=300*32;    %sbj 708
 
 %% Converts voltages from (mV) to (V)
@@ -122,7 +124,7 @@ LAL=intersect(LL_lung_voxels, LA_lung_voxels); %Lower anterior region
 
 % Load in JT mesh and get midpoint of each voxel
 load("mesh_ele.dat");
-load("D:\Cardiac_Imaging\Todler_Human_ACT5\JoshMesh3D_496x2.mat");
+load("Todler_Human_ACT5\JoshMesh3D_496x2.mat");
 mesh_idx=1:992; top_vox=1:496;  bot_vox=497:992;
 %Scale Joshua Tree mesh to subjects radius (R) 
 JT_mesh_vox=Joshmesh;   JT_mesh_vox(:,1:2)=R.*JT_mesh_vox(:,1:2);   JT_mesh_vox(top_vox,5:6)=[zeros(496,1),(H/2).*ones(496,1)];   JT_mesh_vox(bot_vox,5:6)=[(H/2).*ones(496,1),H.*ones(496,1)];
@@ -144,16 +146,17 @@ plt_seg=zeros(992,1);   plt_seg(test_region)=1;
 fmdl=GetReconMesh(model_info.R,model_info.H, new_test_map, "const", 'c', []);   model_info.FEM_Mesh=fmdl;   elec_pts=fmdl.nodes(fmdl.electrode_idx,:); 
 
 %% Finds best source point in test region 
-num_recon_src=1;    Bh(1)=Bh(1)+0.02; Bh(2)=Bh(2)+0.02;
-[Qc, multi_Qc, M0, src_vox, frame_errs, frame_idx, mesh_errs_t]=FindBestQ0([], Bh, test_pts, test_region, elec_pts, model_info, Vekg(:, event_frames), "FitFwdSims","FEM", new_test_map, num_recon_src, "sbj"+sbj_num+"_data_");      save("BestFitQc_multi"+num2str(num_recon_src)+".mat", 'multi_Qc'); save("BestFitQ0c"+num2str(num_recon_src)+".mat", 'Qc');
-save("DipoleSrc_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'Qc'); save("rTCV_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'M0');
-save("MeshErrorIntensity_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'mesh_errs_t');
-save("SourceVoxels_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'src_vox');
-
-load("DipoleSrc_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'Qc'); load("rTCV_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'M0');
-load("MeshErrorIntensity_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'mesh_errs_t');
-load("SourceVoxels_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'src_vox');
-
+num_recon_src=10;    Bh(1)=Bh(1)+0.02; Bh(2)=Bh(2)+0.02;
+if newMQ
+    [Qc, multi_Qc, M0, src_vox, frame_errs, frame_idx, mesh_errs_t]=FindBestQ0([], Bh, test_pts, test_region, elec_pts, model_info, Vekg(:, event_frames), "FitFwdSims","FEM", new_test_map, num_recon_src, "sbj"+sbj_num+"_data_");      save("BestFitQc_multi"+num2str(num_recon_src)+".mat", 'multi_Qc'); save("BestFitQ0c"+num2str(num_recon_src)+".mat", 'Qc');
+    save("DipoleSrc_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'Qc'); save("rTCV_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'M0');
+    save("MeshErrorIntensity_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'mesh_errs_t');
+    save("SourceVoxels_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'src_vox');
+else
+    load("DipoleSrc_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'Qc'); load("rTCV_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'M0');
+    load("MeshErrorIntensity_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'mesh_errs_t');
+    load("SourceVoxels_sbj"+sbj_num+"_K"+num2str(num_recon_src)+".mat", 'src_vox');
+end
 
 % Sets specific frames (typically peak wave frames)
 query_frames=[447, 513, 545, 578, 756]; %sbj 63
@@ -196,7 +199,7 @@ if new_BSM_interp
     save(BSMsavefile, 'Vq', '-v7.3');
     fprintf("BSM saved to file: %s \n", BSMsavefile);
 end
-% load("interpV_sbj"+sbj_num+".mat");
+load("interpV_sbj"+sbj_num+".mat");
 
 
 %% Plot Total Cardiac Vector
@@ -268,5 +271,6 @@ grid on; hold on;
 % Once BSM computation time has been fixed, this will hopefully be able to
 % be displayed and computed in real time (8/27/24)
 if plt_all
-    PlotData(Vq, ecg_wave, Mc, Mvc, [], fmdl, mappedWaves, s0, sN, model_info, plot_idx)
+    plot_idx=event_frames;
+    PlotData(Vq, L2_ecg, Mc, [], [], fmdl, mappedWaves, first_ecg_idx, end_ecg_idx, model_info, plot_idx)
 end
